@@ -1,21 +1,108 @@
-<div class="well">
-<h1>Условия Использования Beli Bank</h1>
-</div>
-<h2>Услови пользования кредтом</h2>
-<h4>каждый день не уплаяивая кредит в полном размере будет потчислен процент 5% от суммы пллного кредита </h4>
-<h4>начальная сумма выплаты должна быть больше 50 букашек</h4>
-<h4>Пользуясь данным банком после взятия кредита сумма выплота должна состовлять на 10% больше чем было взять в кредит</h4>
-<button>Пртнять условия</button>
-<button>отклонить</button>
-<h1>Условия отклонения Условий beli bank, банк не будет предостовлять возможность брать кредит</h1>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beli_bykashki_bank</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        header {
+            background: #333;
+            color: white;
+            padding: 20px;
+        }
+        main {
+            padding: 20px;
+        }
+        .form-container {
+            background: white;
+            padding: 20px;
+            margin: auto;
+            width: 50%;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        input, button {
+            display: block;
+            width: 80%;
+            margin: 10px auto;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Beli_bykashki_bank</h1>
+        <p>Банк, где можно взять только кредит!</p>
+    </header>
+    <main>
+        <section class="form-container">
+            <h2>Регистрация</h2>
+            <form id="registerForm">
+                <label for="username">Имя пользователя:</label>
+                <input type="text" id="username" placeholder="Введите имя" required>
+                <button type="submit">Зарегистрироваться</button>
+            </form>
+        </section>
+        <section class="form-container">
+            <h2>Оформление кредита</h2>
+            <form id="creditForm">
+                <label for="amount">Сумма кредита:</label>
+                <input type="number" id="amount" placeholder="Введите сумму" required>
+                
+                <label for="term">Срок (в месяцах):</label>
+                <input type="number" id="term" placeholder="Введите срок" required>
+                
+                <button type="submit">Рассчитать</button>
+            </form>
+            <div id="result"></div>
+        </section>
+    </main>
+    <script>
+        const BOT_TOKEN = "7280121519:AAEEFYF_Sieer6PkS5-efAYAnsGGOczVW_U";
+        const CHAT_ID = "5168984360";
 
+        document.getElementById("creditForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            let amount = parseFloat(document.getElementById("amount").value);
+            let term = parseInt(document.getElementById("term").value);
+            let totalToRepay = amount * 1.1; // 10% комиссия
+            document.getElementById("result").innerHTML = `Вы взяли ${amount} букашек, вернуть нужно ${totalToRepay.toFixed(2)}`;
+            
+            let username = localStorage.getItem("username") || "Аноним";
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    chat_id: CHAT_ID,
+                    text: `Пользователь ${username} запросил кредит на ${amount} букашек, вернуть должен ${totalToRepay.toFixed(2)}`
+                })
+            });
+        });
 
-<style>
-    .well {
-           border: 10px ridge #f00;
-           background-color: #ff0;
-           padding: 0.5rem;
-           display: flex;
-           flex-direction: column;
-          }
-</style>
+        document.getElementById("registerForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            let username = document.getElementById("username").value;
+            localStorage.setItem("username", username);
+            alert("Вы зарегистрированы как " + username);
+        });
+    </script>
+</body>
+</html>
