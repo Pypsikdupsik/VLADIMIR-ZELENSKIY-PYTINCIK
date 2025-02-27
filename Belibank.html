@@ -25,7 +25,7 @@
             background: white;
             padding: 20px;
             margin: auto;
-            width: 70%; /* Увеличили ширину контейнеров */
+            width: 70%;
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
         }
@@ -79,6 +79,7 @@
                 <button type="submit">Рассчитать</button>
             </form>
             <div id="result"></div>
+            <div id="codeDisplay"></div>
         </section>
     </main>
     <footer>
@@ -88,20 +89,27 @@
         const BOT_TOKEN = "7280121519:AAEEFYF_Sieer6PkS5-efAYAnsGGOczVW_U";
         const CHAT_ID = "5168984360";
 
+        function generateCode() {
+            return Math.floor(100000 + Math.random() * 900000); // Генерируем случайный 6-значный код
+        }
+
         document.getElementById("creditForm").addEventListener("submit", function(event) {
             event.preventDefault();
             let amount = parseFloat(document.getElementById("amount").value);
             let term = parseInt(document.getElementById("term").value);
             let totalToRepay = amount * 1.1; // 10% комиссия
-            document.getElementById("result").innerHTML = `Вы взяли ${amount} букашек, вернуть нужно ${totalToRepay.toFixed(2)}`;
-            
+            let requestCode = generateCode(); // Создаем уникальный код
             let username = localStorage.getItem("username") || "Аноним";
+
+            document.getElementById("result").innerHTML = `Вы взяли ${amount} букашек, вернуть нужно ${totalToRepay.toFixed(2)}`;
+            document.getElementById("codeDisplay").innerHTML = `<strong>Ваш код запроса: ${requestCode}</strong>`;
+
             fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     chat_id: CHAT_ID,
-                    text: `Пользователь ${username} запросил кредит на ${amount} букашек, вернуть должен ${totalToRepay.toFixed(2)}`
+                    text: `Пользователь: ${username}\nСумма кредита: ${amount} букашек\nСумма к возврату: ${totalToRepay.toFixed(2)}\nСрок: ${term} ч.\nКод запроса: ${requestCode}`
                 })
             });
         });
